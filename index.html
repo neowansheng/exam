@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>在线古诗文测试</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div id="app">
+    <div id="header">
+        <div id="timer">剩余时间: <span id="time">00:00</span></div>
+        <div id="progress-container">
+            <div id="progress-bar"></div>
+        </div>
+        <div id="question-type"><span id="current-question"></span></div>
+    </div>
+    <div id="question-container">
+        <div id="question">加载问题...</div>
+        <div id="options-container">
+            <div class="option" data-value="A"><span class="option-prefix" style="color: red;">A</span>dfsd</div>
+            <div class="option" data-value="B"><span class="option-prefix" style="color: red;">B</span>feef</div>
+            <div class="option" data-value="C"><span class="option-prefix" style="color: red;">C</span>sdf</div>
+            <div class="option" data-value="D"><span class="option-prefix" style="color: red;">D</span>rafs</div>
+        </div>
+
+        <div id="answers-container">
+            <button class="answer-option" data-index="0">1</button>
+            <button class="answer-option" data-index="1">2</button>
+            <button class="answer-option" data-index="2">3</button>
+            <button class="answer-option" data-index="3">4</button>
+        </div>
+    </div>
+    <div id="footer">
+        <button id="prev">上一题</button>
+        <button id="next">下一题</button>
+        <button id="submit" style="display: none;">交卷</button>
+    </div>
+    
+    <div id="results" style="display:none;"></div>
+</div>
+<script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,153 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Arial', sans-serif;
+    background: #e9ecef;
+}
+
+#app {
+    width: 37%;
+    margin: 0 auto; /* 居中显示 */
+    /* 其他样式保持不变 */
+}
+
+#header {
+    background: #dee2e6;
+    color: #495057;
+    padding: 10px;
+    position: relative;
+}
+
+#timer, #question-type {
+    text-align: center;
+    font-size: 16px;
+    margin-bottom: 5px;
+}
+
+#progress-container {
+    background: black;
+    height: 5px;
+    position: relative;
+    overflow: hidden;
+}
+
+/* 进度条的已完成部分用红色显示 */
+#progress-bar {
+    background-color: red; /* 进度部分设置为红色 */
+}
+
+#question-container {
+    padding: 20px;
+    text-align: center;
+}
+
+/* 在题目和选项之间增加空行 */
+#question {
+    margin-bottom: 1em; /* 调整题目下方的空间 */
+}
+
+#options-container {
+    margin: 0;
+    padding: 0;
+}
+
+.option {
+    display: flex;
+    align-items: center;
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    color: #495057;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.option-prefix {
+    color: red;
+    margin-right: 10px;
+    font-weight: bold;
+}
+
+/* 设置答案按钮样式 */
+.answer-option {
+    border: 1px solid black;
+    color: red; /* 文字颜色为红色 */
+    font-size: larger; /* 文字尺寸更大 */
+    padding: 10px 20px; /* 增加内边距以方便点击 */
+    margin: 5px; /* 添加外边距以分开按钮 */
+    /* 其他样式保持不变 */
+}
+
+.answer-option:hover {
+    background: #add8e6;
+}
+
+.answer-option-selected {
+    background-color: #add8e6; /* 淡蓝色背景 */
+}
+
+#answers-container {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+    width: 70%; /* 设置按钮容器的宽度为屏幕宽度的70% */
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#footer {
+    background: #dee2e6;
+    padding: 10px;
+    text-align: center;
+}
+
+#submit, #prev, #next {
+    background: #6c757d;
+    border: none;
+    padding: 10px 20px;
+    margin: 5px;
+    color: white;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+#prev:disabled {
+    background-color: #e9e9e9;
+    color: #a9a9a9;
+    cursor: not-allowed;
+}
+
+#prev:hover, #next:hover {
+    background: #5a6268;
+}
+
+
+#results {
+    padding-top: 0px;
+    padding-right: 20px; /* 右边距 */
+    padding-bottom: 20px; /* 底部距离 */
+    padding-left: 20px; /* 左边距 */
+    background-color: #f9f9f9;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    display: none; /* 默认隐藏，通过JavaScript动态显示 */
+}
+
+
+@media screen and (max-width: 400px) {
+    #app {
+        width: 100%;
+        box-shadow: none;
+    }
+
+    .answer-option {
+        padding: 10px;
+        margin: 0 2.5%; /* 调整小屏幕上的边距 */
+        width: 20%; /* 调整小屏幕上按钮的宽度 */
+    }
+
+    #answers-container {
+        width: 90%; /* 调整小屏幕上容器的宽度 */
+    }
+}
