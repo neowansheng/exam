@@ -144,7 +144,7 @@ body {
     .answer-option {
         padding: 10px;
         margin: 0 2.5%; /* 调整小屏幕上的边距 */
-        width: 20%; /* 调整小屏幕上按钮的宽度 */
+        width: 15%; /* 调整小屏幕上按钮的宽度 */
     }
 
     #answers-container {
