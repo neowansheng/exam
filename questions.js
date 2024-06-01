@@ -408,7 +408,8 @@ const questions = [
             "つとめて"
         ],
         "answer": "B",
-        "analysis": "中文翻译：儿子在大阪的公司上班。 「勤（つと）める」更侧重于以某种身份附着于某个地点工作。用「に」提示工作地点。 「働（はたら）く」则侧重在某个地点进行劳动的行为，属于动态性动作的表述，用「で」提示工作地点。"
+        "analysis": "中文翻译：儿子在大阪的公司上班。 「勤（つと）める」更侧重于以某种身份附着于某个地点工作。用「に」提示工作地点。 「働（はたら）く」则侧重在某个地点进行劳动的行为，属于动态性动作的表
+述，用「で」提示工作地点。"
     },
     {
         "question": "こんなに（　）本を　持って　いくのは　たいへんです。",
@@ -1743,104 +1744,3 @@ const questions = [
         "analysis": "中文翻译：那里的玻璃掉了，别踩。 「から」在这里表示原因。"
     }
 ]
-
-
-
-
-
-let currentQuestionIndex = 0;
-
-// 获取页面元素
-const questionDisplay = document.getElementById('question');
-const optionsContainer = document.getElementById('options-container');
-const feedbackDisplay = document.getElementById('feedback');
-const answerButtons = document.querySelectorAll('.answer-option');
-const prevQuestionButton = document.getElementById('prev-question');
-const nextQuestionButton = document.getElementById('next-question');
-
-// 显示当前问题和选项
-function showQuestion() {
-    const currentQuestion = questions[currentQuestionIndex];
-    questionDisplay.textContent = currentQuestion.question;
-
-    optionsContainer.innerHTML = '';
-    currentQuestion.options.forEach((option, index) => {
-        const optionElement = document.createElement('div');
-        optionElement.classList.add('option');
-        optionElement.innerHTML = `<span class="option-prefix">${String.fromCharCode(65 + index)}.</span> ${option}`;
-        optionsContainer.appendChild(optionElement);
-    });
-
-    feedbackDisplay.style.display = 'none';  // 隐藏之前的反馈信息
-    answerButtons.forEach(button => button.classList.remove('selected'));  // 重置按钮状态
-    updateNavigationButtons();
-}
-
-// 检查用户选择的答案
-function checkAnswer(index) {
-    const currentQuestion = questions[currentQuestionIndex];
-    const selectedOption = String.fromCharCode(65 + index);
-
-    if (selectedOption === currentQuestion.answer) {
-        feedbackDisplay.textContent = '回答正确！';
-        feedbackDisplay.className = 'correct';
-    } else {
-        feedbackDisplay.innerHTML = `回答错误！<br><span class="analysis">解析：${currentQuestion.analysis}</span><br>正确答案：${currentQuestion.answer}`;
-        feedbackDisplay.className = 'incorrect';
-    }
-    feedbackDisplay.style.display = 'block';
-
-    // 设置选中按钮的背景色
-    answerButtons.forEach(button => button.classList.remove('selected'));
-    answerButtons[index].classList.add('selected');
-}
-
-// 更新导航按钮的状态
-function updateNavigationButtons() {
-    prevQuestionButton.disabled = currentQuestionIndex === 0;
-    nextQuestionButton.disabled = currentQuestionIndex === questions.length - 1;
-}
-
-// 显示上一题
-function showPreviousQuestion() {
-    if (currentQuestionIndex > 0) {
-        currentQuestionIndex--;
-        showQuestion();
-    }
-}
-
-// 显示下一题
-function showNextQuestion() {
-    if (currentQuestionIndex < questions.length - 1) {
-        currentQuestionIndex++;
-        showQuestion();
-    }
-}
-
-// 为1234按钮添加事件监听器
-answerButtons.forEach((button, index) => {
-    button.addEventListener('click', () => checkAnswer(index));
-});
-
-// 为导航按钮添加事件监听器
-prevQuestionButton.addEventListener('click', showPreviousQuestion);
-nextQuestionButton.addEventListener('click', showNextQuestion);
-
-// 初始化测试
-function initQuiz() {
-    showQuestion();
-}
-
-// 初始化时隐藏提交按钮，并禁用“上一题”按钮
-window.onload = function() {
-    initQuiz();
-};
-
-
-
-
-
-
-
-
-

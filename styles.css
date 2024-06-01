@@ -151,3 +151,34 @@ body {
         width: 90%; /* 调整小屏幕上容器的宽度 */
     }
 }
+
+
+#feedback {
+    margin-top: 20px;
+    padding: 10px;
+    border-radius: 5px;
+    text-align: left; /* 左对齐 */
+    display: none; /* 默认隐藏，通过JavaScript动态显示 */
+}
+
+#feedback.correct {
+    color: green;
+}
+
+#feedback.incorrect {
+    color: red;
+}
+
+#feedback .analysis {
+    color: green; /* 解析内容显示为绿色 */
+}
+
+button.answer-option.selected {
+    background-color: #495057;
+}
+
+#navigation-buttons {
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+}
