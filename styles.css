@@ -24,16 +24,18 @@ body {
     margin-bottom: 5px;
 }
 
+/* 进度条样式 */
 #progress-container {
-    background: black;
-    height: 5px;
-    position: relative;
-    overflow: hidden;
+    width: 100%;
+    height: 20px;
+    background-color: black;
+    margin-bottom: 20px;
 }
 
-/* 进度条的已完成部分用红色显示 */
 #progress-bar {
-    background-color: red; /* 进度部分设置为红色 */
+    width: 0;
+    height: 100%;
+    background-color: red;
 }
 
 #question-container {
@@ -154,7 +156,6 @@ body {
 
 
 #feedback {
-    margin-top: 20px;
     padding: 10px;
     border-radius: 5px;
     text-align: left; /* 左对齐 */
@@ -181,4 +182,8 @@ button.answer-option.selected {
     margin-top: 20px;
     display: flex;
     justify-content: space-between;
+}
+
+.option.selected {
+    background-color: #dcd0ff; /* 选中状态的淡紫色背景 */
 }

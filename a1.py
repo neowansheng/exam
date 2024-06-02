@@ -29,6 +29,9 @@ for line in lines:
             'analysis': ''
         }
         parsing_analysis = False
+        parsing_question = True
+    elif parsing_question and not line.startswith(('A.', 'B.', 'C.', 'D.', '【正确答案】：', '【解析】：')):
+        current_question['question'] += ' ' + line.strip()
     elif line.startswith('A.'):
         current_question['options'].append(line.split('A.')[1].strip())
     elif line.startswith('B.'):
@@ -37,13 +40,27 @@ for line in lines:
         current_question['options'].append(line.split('C.')[1].strip())
     elif line.startswith('D.'):
         current_question['options'].append(line.split('D.')[1].strip())
+        parsing_question = False
     elif line.startswith('【正确答案】：'):
-        current_question['answer'] = line.split('：')[1].strip()
+        answer_letter = line.split('：')[1].strip()
+        answer_index = ord(answer_letter) - ord('A')
+        current_question['answer'] = current_question['options'][answer_index]
     elif line.startswith('【解析】：'):
         current_question['analysis'] = line.split('：', 1)[1].strip()
         parsing_analysis = True
     elif parsing_analysis:
-        current_question['analysis'] += ' ' + line
+        if line.startswith('（单选题，2分）'):
+            parsing_analysis = False
+            questions.append(current_question)
+            current_question = {
+                'question': line.split('）', 1)[1].strip(),
+                'options': [],
+                'answer': '',
+                'analysis': ''
+            }
+            parsing_question = True
+        else:
+            current_question['analysis'] += ' ' + line
 
 if current_question:
     questions.append(current_question)
