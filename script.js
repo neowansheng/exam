@@ -1745,7 +1745,6 @@ const questions = [
 ]
 
 
-
 // 随机打乱数组的顺序
 function shuffle(array) {
     for (let i = array.length - 1; i > 0; i--) {
@@ -1754,13 +1753,24 @@ function shuffle(array) {
     }
 }
 
-// 初始化时随机打乱题目顺序
-shuffle(questions);
+const groupSize = 15;
+const questionGroups = [];
 
+// 分组题目
+for (let i = 0; i < questions.length; i += groupSize) {
+    questionGroups.push(questions.slice(i, i + groupSize));
+}
 
+// 随机打乱每个组内的题目顺序
+questionGroups.forEach(group => shuffle(group));
+
+let currentGroupIndex = 0;
 let currentQuestionIndex = 0;
+let totalTime = 0;
+let timerInterval;
 
 // 获取页面元素
+const groupSelector = document.getElementById('group-selector');
 const questionDisplay = document.getElementById('question');
 const optionsContainer = document.getElementById('options-container');
 const feedbackDisplay = document.getElementById('feedback');
@@ -1768,9 +1778,45 @@ const prevQuestionButton = document.getElementById('prev-question');
 const nextQuestionButton = document.getElementById('next-question');
 const progressBar = document.getElementById('progress-bar');
 
+// 创建组选择器
+function createGroupSelectors() {
+    groupSelector.innerHTML = '';
+    questionGroups.forEach((group, index) => {
+        const option = document.createElement('option');
+        option.value = index;
+        option.textContent = `组 ${index + 1}`;
+        groupSelector.appendChild(option);
+    });
+}
+
+// 选择题目组
+function selectGroup(groupIndex) {
+    currentGroupIndex = groupIndex;
+    currentQuestionIndex = 0;
+    resetTimer();
+    showQuestion();
+}
+
+// 重置计时器
+function resetTimer() {
+    clearInterval(timerInterval);
+    totalTime = 0;
+    document.getElementById("timer").innerText = `用时：0分0秒`;
+    startTimer();
+}
+
+// 开始计时器
+function startTimer() {
+    timerInterval = setInterval(() => {
+        totalTime++;
+        document.getElementById("timer").innerText = `用时：${Math.floor(totalTime / 60)}分${totalTime % 60}秒`;
+    }, 1000);
+}
+
 // 显示当前问题和选项
 function showQuestion() {
-    const currentQuestion = questions[currentQuestionIndex];
+    const currentGroup = questionGroups[currentGroupIndex];
+    const currentQuestion = currentGroup[currentQuestionIndex];
     questionDisplay.textContent = currentQuestion.question;
 
     // 随机化选项顺序并确保答案正确
@@ -1788,7 +1834,7 @@ function showQuestion() {
         const optionElement = document.createElement('div');
         optionElement.classList.add('option');
         optionElement.innerHTML = `<button class="option-button" data-index="${index}">${String.fromCharCode(65 + i)}. ${option}</button>`;
-        optionElement.addEventListener('click', () => selectOption(optionElement, index, correctIndex, i));
+        optionElement.addEventListener('click', () => selectOption(optionElement, index, correctIndex));
         optionsContainer.appendChild(optionElement);
     });
 
@@ -1798,27 +1844,34 @@ function showQuestion() {
 }
 
 // 选中答案时的处理
-function selectOption(optionElement, index, correctIndex, optionCharIndex) {
+function selectOption(optionElement, index, correctIndex) {
     // 移除之前的选中状态
-    document.querySelectorAll('.option').forEach(option => option.classList.remove('selected'));
+    document.querySelectorAll('.option').forEach(option => {
+        option.classList.remove('selected');
+        option.classList.remove('wrong');
+        option.classList.remove('correct');
+    });
 
     // 添加当前选中的状态
     optionElement.classList.add('selected');
 
-    checkAnswer(index, correctIndex, optionCharIndex);
+    checkAnswer(optionElement, index, correctIndex);
 }
 
 // 检查用户选择的答案
-function checkAnswer(selectedIndex, correctIndex, optionCharIndex) {
-    const currentQuestion = questions[currentQuestionIndex];
-    const selectedOption = questions[currentQuestionIndex].options[selectedIndex];
-    const correctOptionChar = String.fromCharCode(65 + correctIndex);
+function checkAnswer(optionElement, selectedIndex, correctIndex) {
+    const currentQuestion = questionGroups[currentGroupIndex][currentQuestionIndex];
+    const selectedOption = currentQuestion.options[selectedIndex];
+    const correctOptionElement = optionsContainer.children[correctIndex];
 
     if (selectedOption === currentQuestion.answer) {
+        optionElement.classList.add('correct');
         feedbackDisplay.innerHTML = `回答正确！<br><span class="analysis">解析：${currentQuestion.analysis}</span>`;
         feedbackDisplay.className = 'correct';
     } else {
-        feedbackDisplay.innerHTML = `回答错误！<br><span class="analysis">解析：${currentQuestion.analysis}</span><br>正确答案：${correctOptionChar}`;
+        optionElement.classList.add('wrong');
+        correctOptionElement.classList.add('correct');
+        feedbackDisplay.innerHTML = `回答错误！<br><span class="analysis">解析：${currentQuestion.analysis}</span><br>正确答案：${String.fromCharCode(65 + correctIndex)}. ${currentQuestion.answer}`;
         feedbackDisplay.className = 'incorrect';
     }
     feedbackDisplay.style.display = 'block';
@@ -1827,12 +1880,12 @@ function checkAnswer(selectedIndex, correctIndex, optionCharIndex) {
 // 更新导航按钮的状态
 function updateNavigationButtons() {
     prevQuestionButton.disabled = currentQuestionIndex === 0;
-    nextQuestionButton.disabled = currentQuestionIndex === questions.length - 1;
+    nextQuestionButton.disabled = currentQuestionIndex === questionGroups[currentGroupIndex].length - 1;
 }
 
 // 更新进度条
 function updateProgressBar() {
-    const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
+    const progress = ((currentQuestionIndex + 1) / questionGroups[currentGroupIndex].length) * 100;
     progressBar.style.width = `${progress}%`;
 }
 
@@ -1846,7 +1899,7 @@ function showPreviousQuestion() {
 
 // 显示下一题
 function showNextQuestion() {
-    if (currentQuestionIndex < questions.length - 1) {
+    if (currentQuestionIndex < questionGroups[currentGroupIndex].length - 1) {
         currentQuestionIndex++;
         showQuestion();
     }
@@ -1854,12 +1907,15 @@ function showNextQuestion() {
 
 // 初始化测试
 function initQuiz() {
+    createGroupSelectors();
     showQuestion();
+    startTimer();
 }
 
 // 为导航按钮添加事件监听器
 prevQuestionButton.addEventListener('click', showPreviousQuestion);
 nextQuestionButton.addEventListener('click', showNextQuestion);
+groupSelector.addEventListener('change', (e) => selectGroup(parseInt(e.target.value)));
 
 // 初始化时隐藏提交按钮，并禁用“上一题”按钮
 window.onload = function() {

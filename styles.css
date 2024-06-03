@@ -184,6 +184,24 @@ button.answer-option.selected {
     justify-content: space-between;
 }
 
-.option.selected {
-    background-color: #dcd0ff; /* 选中状态的淡紫色背景 */
+.option.correct {
+    background-color: green;
+}
+
+.option.wrong {
+    background-color: red;
+}
+
+
+#group-selector-container {
+    margin-top: 20px;
+}
+
+#group-selector {
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: 1px solid #dee2e6;
+    background-color: #f8f9fa;
+    color: #495057;
 }
