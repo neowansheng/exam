@@ -1744,7 +1744,6 @@ const questions = [
     }
 ]
 
-
 // 随机打乱数组的顺序
 function shuffle(array) {
     for (let i = array.length - 1; i > 0; i--) {
@@ -1755,6 +1754,8 @@ function shuffle(array) {
 
 const groupSize = 15;
 const questionGroups = [];
+let groupResults = [];
+
 
 // 分组题目
 for (let i = 0; i < questions.length; i += groupSize) {
@@ -1793,6 +1794,7 @@ function createGroupSelectors() {
 function selectGroup(groupIndex) {
     currentGroupIndex = groupIndex;
     currentQuestionIndex = 0;
+    groupResults = new Array(questionGroups[currentGroupIndex].length).fill(null); // 重置统计结果
     resetTimer();
     showQuestion();
 }
@@ -1833,7 +1835,7 @@ function showQuestion() {
     shuffledOptions.forEach(({ option, index }, i) => {
         const optionElement = document.createElement('div');
         optionElement.classList.add('option');
-        optionElement.innerHTML = `<button class="option-button" data-index="${index}">${String.fromCharCode(65 + i)}. ${option}</button>`;
+        optionElement.innerHTML = `<span>${String.fromCharCode(65 + i)}. ${option}</span><span class="feedback-symbol"></span>`;
         optionElement.addEventListener('click', () => selectOption(optionElement, index, correctIndex));
         optionsContainer.appendChild(optionElement);
     });
@@ -1850,6 +1852,7 @@ function selectOption(optionElement, index, correctIndex) {
         option.classList.remove('selected');
         option.classList.remove('wrong');
         option.classList.remove('correct');
+        option.querySelector('.feedback-symbol').textContent = '';
     });
 
     // 添加当前选中的状态
@@ -1865,22 +1868,58 @@ function checkAnswer(optionElement, selectedIndex, correctIndex) {
     const correctOptionElement = optionsContainer.children[correctIndex];
 
     if (selectedOption === currentQuestion.answer) {
-        optionElement.classList.add('correct');
+        optionElement.querySelector('.feedback-symbol').textContent = '✔';
+        optionElement.querySelector('.feedback-symbol').classList.add('correct-symbol');
         feedbackDisplay.innerHTML = `回答正确！<br><span class="analysis">解析：${currentQuestion.analysis}</span>`;
         feedbackDisplay.className = 'correct';
+        groupResults[currentQuestionIndex] = true; // 记录正确
     } else {
-        optionElement.classList.add('wrong');
-        correctOptionElement.classList.add('correct');
+        optionElement.querySelector('.feedback-symbol').textContent = '✘';
+        optionElement.querySelector('.feedback-symbol').classList.add('incorrect-symbol');
+        correctOptionElement.querySelector('.feedback-symbol').textContent = '✔';
+        correctOptionElement.querySelector('.feedback-symbol').classList.add('correct-symbol');
         feedbackDisplay.innerHTML = `回答错误！<br><span class="analysis">解析：${currentQuestion.analysis}</span><br>正确答案：${String.fromCharCode(65 + correctIndex)}. ${currentQuestion.answer}`;
         feedbackDisplay.className = 'incorrect';
+        groupResults[currentQuestionIndex] = false; // 记录错误
     }
     feedbackDisplay.style.display = 'block';
 }
 
+let quizSubmitted = false;
+
+function submitQuiz() {
+    clearInterval(timerInterval);
+    quizSubmitted = true; // 标记为已交卷
+    feedbackDisplay.innerHTML = `<div style="text-align: center; font-size: 24px; color: black;">测验成绩</div>`;
+    const totalQuestions = groupResults.length;
+    const correctCount = groupResults.filter(result => result === true).length;
+    const wrongCount = groupResults.filter(result => result === false).length;
+    // const unansweredCount = groupResults.filter(result => result === null).length;
+    const unansweredCount = totalQuestions - correctCount - wrongCount;
+    const accuracy = ((correctCount / totalQuestions) * 100).toFixed(2);
+
+    feedbackDisplay.innerHTML += `<div style="color: black; text-align: left;">
+        答题所用时间：${Math.floor(totalTime / 60)}分${totalTime % 60}秒<br>
+        总题数：${totalQuestions}<br>
+        做对了：${correctCount}题<br>
+        做错了：${wrongCount}题<br>
+        未选：${unansweredCount}题<br>
+        正确率：${accuracy}%</div>`;
+    nextQuestionButton.disabled = true;
+}
+
+
 // 更新导航按钮的状态
 function updateNavigationButtons() {
+    const currentGroup = questionGroups[currentGroupIndex];
     prevQuestionButton.disabled = currentQuestionIndex === 0;
-    nextQuestionButton.disabled = currentQuestionIndex === questionGroups[currentGroupIndex].length - 1;
+    if (currentQuestionIndex === currentGroup.length - 1) {
+        nextQuestionButton.textContent = "交卷";
+        nextQuestionButton.disabled = quizSubmitted && groupResults.every(result => result !== null); // 允许重新交卷
+    } else {
+        nextQuestionButton.textContent = "下一题";
+        nextQuestionButton.disabled = false; // 确保“下一题”按钮在未提交时可用
+    }
 }
 
 // 更新进度条
@@ -1912,9 +1951,22 @@ function initQuiz() {
     startTimer();
 }
 
+
 // 为导航按钮添加事件监听器
-prevQuestionButton.addEventListener('click', showPreviousQuestion);
-nextQuestionButton.addEventListener('click', showNextQuestion);
+// prevQuestionButton.addEventListener('click', showPreviousQuestion);
+// nextQuestionButton.addEventListener('click', showNextQuestion);
+prevQuestionButton.addEventListener('click', () => {
+    quizSubmitted = false; // 重置提交状态
+    showPreviousQuestion();
+});
+
+nextQuestionButton.addEventListener('click', () => {
+    if (currentQuestionIndex === questionGroups[currentGroupIndex].length - 1) {
+        submitQuiz();
+    } else {
+        showNextQuestion();
+    }
+});
 groupSelector.addEventListener('change', (e) => selectGroup(parseInt(e.target.value)));
 
 // 初始化时隐藏提交按钮，并禁用“上一题”按钮

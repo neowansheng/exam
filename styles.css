@@ -54,7 +54,9 @@ body {
 }
 
 .option {
+    position: relative; /* 添加相对定位 */
     display: flex;
+    justify-content: space-between;
     align-items: center;
     background: #f8f9fa;
     border: 1px solid #dee2e6;
@@ -71,14 +73,18 @@ body {
     font-weight: bold;
 }
 
-/* 设置答案按钮样式 */
-.answer-option {
-    border: 1px solid black;
-    color: red; /* 文字颜色为红色 */
-    font-size: larger; /* 文字尺寸更大 */
-    padding: 10px 20px; /* 增加内边距以方便点击 */
-    margin: 5px; /* 添加外边距以分开按钮 */
-    /* 其他样式保持不变 */
+.option-button {
+    background: none;
+    border: none;
+    padding: 0;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+}
+
+.feedback-symbol {
+    font-size: 1.5em;
+    margin-left: 10px;
 }
 
 .answer-option:hover {
@@ -124,7 +130,6 @@ body {
     background: #5a6268;
 }
 
-
 #results {
     padding-top: 0px;
     padding-right: 20px; /* 右边距 */
@@ -135,7 +140,6 @@ body {
     border-radius: 5px;
     display: none; /* 默认隐藏，通过JavaScript动态显示 */
 }
-
 
 @media screen and (max-width: 400px) {
     #app {
@@ -153,7 +157,6 @@ body {
         width: 90%; /* 调整小屏幕上容器的宽度 */
     }
 }
-
 
 #feedback {
     padding: 10px;
@@ -174,6 +177,23 @@ body {
     color: green; /* 解析内容显示为绿色 */
 }
 
+.feedback-symbol {
+    font-size: 1.5em;
+    margin-left: 10px;
+    position: absolute; /* 绝对定位 */
+    top: 50%; /* 垂直居中 */
+    transform: translateY(-50%); /* 垂直居中 */
+    right: 10px; /* 距离右侧 10px */
+}
+
+.correct-symbol {
+    color: green;
+}
+
+.incorrect-symbol {
+    color: red;
+}
+
 button.answer-option.selected {
     background-color: #495057;
 }
@@ -183,15 +203,6 @@ button.answer-option.selected {
     display: flex;
     justify-content: space-between;
 }
-
-.option.correct {
-    background-color: green;
-}
-
-.option.wrong {
-    background-color: red;
-}
-
 
 #group-selector-container {
     margin-top: 20px;
