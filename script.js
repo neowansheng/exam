@@ -1840,6 +1840,8 @@ function showQuestion() {
         optionsContainer.appendChild(optionElement);
     });
 
+    optionsContainer.classList.remove('answered'); // 重置回答状态
+
     feedbackDisplay.style.display = 'none';  // 隐藏之前的反馈信息
     updateNavigationButtons();
     updateProgressBar();
@@ -1847,6 +1849,11 @@ function showQuestion() {
 
 // 选中答案时的处理
 function selectOption(optionElement, index, correctIndex) {
+    // 检查是否已经选择过答案
+    if (optionElement.parentNode.classList.contains('answered')) {
+        return; // 已经选择过答案，直接返回
+    }
+
     // 移除之前的选中状态
     document.querySelectorAll('.option').forEach(option => {
         option.classList.remove('selected');
@@ -1857,6 +1864,9 @@ function selectOption(optionElement, index, correctIndex) {
 
     // 添加当前选中的状态
     optionElement.classList.add('selected');
+
+    // 标记为已回答
+    optionElement.parentNode.classList.add('answered');
 
     checkAnswer(optionElement, index, correctIndex);
 }
